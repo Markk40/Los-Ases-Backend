@@ -1,0 +1,12 @@
+djangoServer/
+# Env files
+.env
+*.env
+
+# IDEs y config local
+.vscode/
+.idea/
+
+# Migraciones innecesarias
+*/migrations/*.pyc
+*/migrations/__pycache__/
