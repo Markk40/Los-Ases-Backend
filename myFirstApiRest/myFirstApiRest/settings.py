@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-ot_y!r1=)wq3#uw6a(^0#4+6ot9b4idoxru9z&z^x9lr(5^d_%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS =  ['localhost', '127.0.0.1', '0.0.0.0'] 
 
 
 # Application definition
@@ -40,9 +40,12 @@ INSTALLED_APPS = [
     "auctions",
     "rest_framework",
     "drf_spectacular",
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', #Añadir en primera posición 
+    'django.middleware.common.CommonMiddleware', #Mover a segunda posición 
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -138,3 +141,5 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
+CORS_ALLOW_ALL_ORIGINS = True 
+CORS_ALLOW_CREDENTIALS = True 
