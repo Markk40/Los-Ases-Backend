@@ -1,0 +1,31 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Subasta</title>
+  <link rel="stylesheet" type="text/css" href="{% static 'auctions/styles.css' %}">
+</head>
+<body>
+
+    {% include './header.html' %}
+
+    <div class="container">
+        <h1>Editar Subasta</h1>
+
+        <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar Cambios</button>
+        </form>
+
+        <div class="buttons">
+        <a href="{% url 'index' %}" class="btn">Volver a la lista de subastas</a>
+        </div>
+    </div>
+
+    {% include './footer.html' %}
+
+</body>
+</html>
