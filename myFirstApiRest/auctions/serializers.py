@@ -4,16 +4,12 @@ from .models import Category, Auction, Bid
 from drf_spectacular.utils import extend_schema_field
 
 class CategoryListCreateSerializer(serializers.ModelSerializer):
-    creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ",read_only=True)
-    closing_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ")
     
     class Meta:
         model = Category
-        fields = ['id','name', 'closing_date', 'creation_date']
+        fields = ['id','name']
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
-    creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ",read_only=True)
-    closing_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ")
 
     class Meta:
         model = Category
