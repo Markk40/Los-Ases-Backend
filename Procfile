@@ -1,1 +1,1 @@
-web: gunicorn myFirstApiRest.wsgi:application
+web: gunicorn myFirstApiRest.myFirstApiRest.wsgi:application
