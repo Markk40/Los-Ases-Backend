@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os 
+import dj_database_url 
+from dotenv import load_dotenv 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +29,7 @@ SECRET_KEY = "django-insecure-ot_y!r1=)wq3#uw6a(^0#4+6ot9b4idoxru9z&z^x9lr(5^d_%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS =  ['localhost', '127.0.0.1', '0.0.0.0'] 
+ALLOWED_HOSTS =  ['localhost', '127.0.0.1', '0.0.0.0', "@dpg-cvu1aube5dus73cess2g-a.oregon-postgres.render.com"] 
 
 
 # Application definition
@@ -83,12 +86,10 @@ WSGI_APPLICATION = "myFirstApiRest.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+load_dotenv() 
+DATABASES = { 
+'default': dj_database_url.config(default=os.getenv("DATABASE_URL")) 
+} 
 
 
 # Password validation
