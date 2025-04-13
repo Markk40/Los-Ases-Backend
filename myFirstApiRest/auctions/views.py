@@ -48,7 +48,7 @@ class BidListCreate(generics.ListCreateAPIView):
         serializer.save(auction_id=self.kwargs['auction_id'])
 
 class BidRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsOwnerOrAdmin]
+    permission_classes = [IsAuthenticated]
     serializer_class = BidDetailSerializer
 
     def get_queryset(self):
