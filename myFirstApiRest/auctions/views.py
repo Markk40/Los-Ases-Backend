@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from .permissions import IsOwnerOrAdmin 
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class CategoryListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -23,11 +24,13 @@ class AuctionListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Auction.objects.all()
     serializer_class = AuctionListCreateSerializer
+    parser_classes = [MultiPartParser, FormParser]  # Permite el manejo de archivos (imágenes)
     
 class AuctionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwnerOrAdmin]
     queryset = Auction.objects.all()
     serializer_class = AuctionDetailSerializer
+    parser_classes = [MultiPartParser, FormParser]  # Permite el manejo de archivos (imágenes)
 
 class UserAuctionListView(APIView): 
     permission_classes = [IsAuthenticated] 
