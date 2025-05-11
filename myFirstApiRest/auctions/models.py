@@ -56,3 +56,15 @@ class Rating(models.Model):
 
     def __str__(self):
         return f"{self.reviewer.username} dio {self.points} a {self.auction.title}"
+    
+class Comment(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    reviewer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='comments')
+    auction = models.ForeignKey(Auction, on_delete=models.CASCADE, related_name='comments')
+
+    def __str__(self):
+        return f"{self.title} - {self.reviewer.username}"
+

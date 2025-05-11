@@ -2,11 +2,12 @@ from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import generics
-from .models import Category, Auction, Bid, Rating
+from .models import Category, Auction, Bid, Rating, Comment
 from .serializers import (
     CategoryListCreateSerializer, CategoryDetailSerializer, 
     AuctionListCreateSerializer, AuctionDetailSerializer, 
-    BidListCreateSerializer, BidDetailSerializer, RatingSerializer
+    BidListCreateSerializer, BidDetailSerializer, RatingSerializer,
+    CommentSerializer
     )
 from rest_framework.views import APIView 
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
@@ -88,4 +89,22 @@ class MyRatingView(APIView):
             return Response(serializer.data)
         except Rating.DoesNotExist:
             return Response({"detail": "Valoración no encontrada"}, status=404)
+
+class CommentListCreate(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        return Comment.objects.filter(auction_id=self.kwargs['auction_id'])
+
+    def perform_create(self, serializer):
+        serializer.save(reviewer=self.request.user, auction_id=self.kwargs['auction_id'])
+
+class CommentRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsOwnerOrAdmin]
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        return Comment.objects.filter(auction_id=self.kwargs['auction_id'])
+
 

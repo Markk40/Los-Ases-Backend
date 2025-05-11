@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.utils import timezone
-from .models import Category, Auction, Bid, Rating
+from .models import Category, Auction, Bid, Rating, Comment
 from drf_spectacular.utils import extend_schema_field
 
 class CategoryListCreateSerializer(serializers.ModelSerializer):
@@ -121,3 +121,12 @@ class RatingSerializer(serializers.ModelSerializer):
             defaults={'points': validated_data['points']}
         )
         return rating
+
+class CommentSerializer(serializers.ModelSerializer):
+    reviewer_username = serializers.ReadOnlyField(source='reviewer.username')
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'reviewer', 'reviewer_username', 'auction']
+        read_only_fields = ['reviewer', 'created_at', 'updated_at']
+
