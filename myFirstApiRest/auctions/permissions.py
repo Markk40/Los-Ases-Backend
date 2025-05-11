@@ -7,6 +7,8 @@ class IsOwnerOrAdmin(BasePermission):
     """ 
  
     def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS: 
+            return True 
         user = request.user
 
         if user.is_staff:
