@@ -110,17 +110,14 @@ class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         fields = ['id', 'points', 'auction', 'reviewer']
-        read_only_fields = ['auction', 'reviewer'] 
+        read_only_fields = ['id', 'auction', 'reviewer']
 
-    def validate(self, data):
-        """
-        Aseguramos que un usuario no pueda valorar más de una vez la misma subasta.
-        """
-        auction = data.get('auction')
-        reviewer = self.context['request'].user
-
-        # Comprobamos si el usuario ya ha valorado esta subasta
-        if Rating.objects.filter(auction=auction, reviewer=reviewer).exists():
-            raise serializers.ValidationError("Ya has valorado esta subasta.")
-
-        return data
+    def create(self, validated_data):
+        user = self.context['request'].user
+        auction = validated_data['auction']
+        rating, _ = Rating.objects.update_or_create(
+            reviewer=user,
+            auction=auction,
+            defaults={'points': validated_data['points']}
+        )
+        return rating
