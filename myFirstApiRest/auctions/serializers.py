@@ -16,18 +16,24 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class AuctionListCreateSerializer(serializers.ModelSerializer):
-    creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ",read_only=True)
+    creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
     closing_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ")
     isOpen = serializers.SerializerMethodField(read_only=True)
     average_rating = serializers.FloatField(read_only=True)
+    thumbnail_url = serializers.SerializerMethodField()  # Campo adicional para la URL de la imagen
+
     class Meta:
         model = Auction
         fields = "__all__"
 
-    @extend_schema_field(serializers.BooleanField()) 
+    @extend_schema_field(serializers.BooleanField())
     def get_isOpen(self, obj):
         return obj.closing_date > timezone.now()
-    
+
+    def get_thumbnail_url(self, obj):
+        # Retorna la URL completa de la imagen
+        return obj.thumbnail.url if obj.thumbnail else None
+
     def validate_price(self, value):
         if value <= 0:
             raise serializers.ValidationError("El precio debe ser mayor que cero.")
@@ -56,20 +62,24 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
         return data
 
 class AuctionDetailSerializer(serializers.ModelSerializer):
-    creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ",read_only=True)
+    creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ", read_only=True)
     closing_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ")
     isOpen = serializers.SerializerMethodField(read_only=True)
     average_rating = serializers.FloatField(read_only=True)
+    thumbnail_url = serializers.SerializerMethodField()  # Campo adicional para la URL de la imagen
+
     class Meta:
         model = Auction
         fields = "__all__"
     
     @extend_schema_field(serializers.BooleanField())
     def get_isOpen(self, obj):
-        print(obj.closing_date)
-        print(timezone.now())
         return obj.closing_date > timezone.now()
-    
+
+    def get_thumbnail_url(self, obj):
+        # Retorna la URL completa de la imagen
+        return obj.thumbnail.url if obj.thumbnail else None
+
     def validate_price(self, value):
         if value <= 0:
             raise serializers.ValidationError("El precio debe ser mayor que cero.")
@@ -91,6 +101,7 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("La subasta debe durar al menos 15 días.")
         
         return data
+
 
 class BidListCreateSerializer(serializers.ModelSerializer):
     creation_date = serializers.DateTimeField(read_only=True, format="%Y-%m-%d %H:%M:%S")
