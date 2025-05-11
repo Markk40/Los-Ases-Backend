@@ -6,10 +6,16 @@ class IsOwnerOrAdmin(BasePermission):
     o es administrador. Cualquiera puede consultar (GET). 
     """ 
  
-    def has_object_permission(self, request, view, obj): 
-        # Permitir acceso de lectura a cualquier usuario (GET, HEAD, OPTIONS) 
-        if request.method in SAFE_METHODS: 
-            return True 
- 
-        # Permitir si el usuario es el creador o es administrador 
-        return obj.auctioneer == request.user or request.user.is_staff
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+
+        if user.is_staff:
+            return True
+
+        if hasattr(obj, 'reviewer'):
+            return obj.reviewer == user
+
+        if hasattr(obj, 'auctioneer'):
+            return obj.auctioneer == user
+
+        return False

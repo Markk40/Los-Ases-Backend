@@ -2,8 +2,12 @@ from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import generics
-from .models import Category, Auction, Bid
-from .serializers import CategoryListCreateSerializer, CategoryDetailSerializer, AuctionListCreateSerializer, AuctionDetailSerializer, BidListCreateSerializer, BidDetailSerializer
+from .models import Category, Auction, Bid, Rating
+from .serializers import (
+    CategoryListCreateSerializer, CategoryDetailSerializer, 
+    AuctionListCreateSerializer, AuctionDetailSerializer, 
+    BidListCreateSerializer, BidDetailSerializer, RatingSerializer
+    )
 from rest_framework.views import APIView 
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
@@ -56,3 +60,21 @@ class BidRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Bid.objects.filter(auction_id=self.kwargs['auction_id'])
+    
+class RatingListCreate(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = RatingSerializer
+
+    def get_queryset(self):
+        return Rating.objects.filter(auction_id=self.kwargs['auction_id'], reviewer=self.request.user)
+
+    def perform_create(self, serializer):
+        auction_id = self.kwargs['auction_id']
+        serializer.save(reviewer=self.request.user, auction_id=auction_id)
+
+
+class RatingRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsOwnerOrAdmin]  # Solo el dueño o el admin puede editar/eliminar
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+

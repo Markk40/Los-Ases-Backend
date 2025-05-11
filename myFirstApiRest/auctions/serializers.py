@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.utils import timezone
-from .models import Category, Auction, Bid
+from .models import Category, Auction, Bid, Rating
 from drf_spectacular.utils import extend_schema_field
 
 class CategoryListCreateSerializer(serializers.ModelSerializer):
@@ -59,7 +59,7 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
     creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ",read_only=True)
     closing_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ")
     isOpen = serializers.SerializerMethodField(read_only=True)
-
+    average_rating = serializers.FloatField(source='average_rating', read_only=True)
     class Meta:
         model = Auction
         fields = "__all__"
@@ -78,11 +78,6 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
     def validate_stock(self, value):
         if value <= 0:
             raise serializers.ValidationError("El stock debe ser mayor que cero.")
-        return value
-    
-    def validate_rating(self, value):
-        if value < 0 or value > 5:
-            raise serializers.ValidationError("La calificación debe estar entre 0 y 5.")
         return value
     
     def validate(self, data):
@@ -110,3 +105,22 @@ class BidDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bid
         fields = "__all__"
+
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = ['id', 'points', 'auction', 'reviewer']
+        read_only_fields = ['auction', 'reviewer'] 
+
+    def validate(self, data):
+        """
+        Aseguramos que un usuario no pueda valorar más de una vez la misma subasta.
+        """
+        auction = data.get('auction')
+        reviewer = self.context['request'].user
+
+        # Comprobamos si el usuario ya ha valorado esta subasta
+        if Rating.objects.filter(auction=auction, reviewer=reviewer).exists():
+            raise serializers.ValidationError("Ya has valorado esta subasta.")
+
+        return data
