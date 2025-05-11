@@ -12,7 +12,7 @@ class Category(models.Model):
 class Auction(models.Model):
     title = models.CharField(max_length=150)
     description = models.TextField()
-    start_price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     # rating = models.DecimalField(max_digits=3, decimal_places=2)
     stock = models.IntegerField(validators=[MinValueValidator(1)])
     brand = models.CharField(max_length=100)
@@ -33,14 +33,6 @@ class Auction(models.Model):
             avg = sum(r.points for r in ratings) / ratings.count()
             return round(avg, 2)
         return 1.0 
-    
-    @property
-    def price(self):
-        highest_bid = self.bids.order_by('-price').first()
-        if highest_bid:
-            return highest_bid.amount
-        return self.start_price
-
     
 class Bid(models.Model):
     auction = models.ForeignKey(Auction, related_name='bids', on_delete=models.CASCADE)
