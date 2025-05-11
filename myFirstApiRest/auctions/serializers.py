@@ -30,16 +30,12 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
         return obj.closing_date > timezone.now()
 
     def get_thumbnail_url(self, obj):
-        request = self.context.get('request')
+        request = self.context.get('request')  # Esto es necesario para generar la URL absoluta
         if obj.thumbnail and request:
-            return request.build_absolute_uri(obj.thumbnail.url)
+            return request.build_absolute_uri(obj.thumbnail.url)  # Devuelve la URL completa
         return None
 
-    def get_price(self, obj):
-        highest_bid = obj.bid_set.order_by('-amount').first()
-        return highest_bid.amount if highest_bid else obj.start_price
-
-    def validate_start_price(self, value):
+    def validate_price(self, value):
         if value <= 0:
             raise serializers.ValidationError("El precio debe ser mayor que cero.")
         return value
