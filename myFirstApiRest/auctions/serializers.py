@@ -31,8 +31,10 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
         return obj.closing_date > timezone.now()
 
     def get_thumbnail_url(self, obj):
-        # Retorna la URL completa de la imagen
-        return obj.thumbnail.url if obj.thumbnail else None
+        request = self.context.get('request')  # Esto es necesario para generar la URL absoluta
+        if obj.thumbnail and request:
+            return request.build_absolute_uri(obj.thumbnail.url)  # Devuelve la URL completa
+        return None
 
     def validate_price(self, value):
         if value <= 0:
