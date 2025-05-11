@@ -109,20 +109,15 @@ class BidDetailSerializer(serializers.ModelSerializer):
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        fields = ['id', 'points', 'auction', 'reviewer']
-        read_only_fields = ['id', 'reviewer']  # 'auction' no necesita estar en read_only_fields
+        fields = ['id', 'points']  # Solo estos, porque los otros los añades en la view
 
     def create(self, validated_data):
-        # Obtén el usuario desde la solicitud
+        auction_id = self.context['view'].kwargs['auction_id']
         reviewer = self.context['request'].user
 
-        # Obtén el auction_id desde los parámetros de la URL
-        auction_id = self.context['view'].kwargs['auction_id']  # 'auction_id' debería ser el nombre del parámetro en la URL
-
-        # Creamos o actualizamos el Rating
         rating, _ = Rating.objects.update_or_create(
             reviewer=reviewer,
-            auction_id=auction_id,  # Usamos auction_id aquí, no el objeto completo
+            auction_id=auction_id,
             defaults={'points': validated_data['points']}
         )
         return rating
