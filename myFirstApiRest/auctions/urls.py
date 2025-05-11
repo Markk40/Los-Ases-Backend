@@ -16,6 +16,6 @@ urlpatterns = [
     path('<int:auction_id>/ratings/', RatingListCreate.as_view(), name='rating-list-create'),
     path('<int:auction_id>/ratings/<int:pk>/', RatingRetrieveUpdateDestroy.as_view(), name='rating-detail'),
     path('<int:auction_id>/my-rating/', MyRatingView.as_view(), name='my-rating'),
-    path('auctions/<int:auction_id>/comments/', CommentListCreate.as_view(), name='comment-list-create'),
-    path('auctions/<int:auction_id>/comments/<int:pk>/', CommentRetrieveUpdateDestroy.as_view(), name='comment-detail'),
+    path('<int:auction_id>/comments/', CommentListCreate.as_view(), name='comment-list-create'),
+    path('<int:auction_id>/comments/<int:pk>/', CommentRetrieveUpdateDestroy.as_view(), name='comment-detail'),
 ]

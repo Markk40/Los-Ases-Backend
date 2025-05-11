@@ -98,7 +98,12 @@ class CommentListCreate(generics.ListCreateAPIView):
         return Comment.objects.filter(auction_id=self.kwargs['auction_id'])
 
     def perform_create(self, serializer):
-        serializer.save(reviewer=self.request.user, auction_id=self.kwargs['auction_id'])
+        auction_id = self.kwargs.get('auction_id')
+        serializer.save(
+            reviewer=self.request.user,
+            auction_id=auction_id
+            )
+
 
 class CommentRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwnerOrAdmin]
