@@ -78,3 +78,14 @@ class RatingRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
 
+class MyRatingView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, auction_id, *args, **kwargs):
+        try:
+            rating = Rating.objects.get(auction_id=auction_id, reviewer=request.user)
+            serializer = RatingSerializer(rating)
+            return Response(serializer.data)
+        except Rating.DoesNotExist:
+            return Response({"detail": "Valoración no encontrada"}, status=404)
+
