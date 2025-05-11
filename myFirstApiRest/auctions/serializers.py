@@ -59,7 +59,7 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
     creation_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ",read_only=True)
     closing_date = serializers.DateTimeField(format="%Y-%m-%dT%H:%M:%SZ")
     isOpen = serializers.SerializerMethodField(read_only=True)
-    average_rating = serializers.FloatField(source='average_rating', read_only=True)
+    average_rating = serializers.FloatField(read_only=True)
     class Meta:
         model = Auction
         fields = "__all__"
