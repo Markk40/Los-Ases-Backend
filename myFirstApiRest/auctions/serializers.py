@@ -53,18 +53,19 @@ class AuctionListCreateSerializer(serializers.ModelSerializer):
     
     def validate(self, data):
         creation_date = self.instance.creation_date if self.instance else timezone.now()
-        closing_date = data.get("closing_date", self.instance.closing_date if self.instance else None)
+        closing_date = data.get("closing_date", getattr(self.instance, "closing_date", None))
 
         if closing_date is None:
             raise serializers.ValidationError("Se requiere una fecha de cierre válida.")
 
         if closing_date <= creation_date:
             raise serializers.ValidationError("La fecha de cierre debe ser posterior a la de creación.")
-
+        
         if closing_date <= creation_date + timezone.timedelta(days=15):
             raise serializers.ValidationError("La subasta debe durar al menos 15 días.")
-
+        
         return data
+
 
 
 class AuctionDetailSerializer(serializers.ModelSerializer):
@@ -98,7 +99,10 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
     
     def validate(self, data):
         creation_date = self.instance.creation_date if self.instance else timezone.now()
-        closing_date = data.get("closing_date")
+        closing_date = data.get("closing_date", getattr(self.instance, "closing_date", None))
+
+        if closing_date is None:
+            raise serializers.ValidationError("Se requiere una fecha de cierre válida.")
 
         if closing_date <= creation_date:
             raise serializers.ValidationError("La fecha de cierre debe ser posterior a la de creación.")
@@ -107,6 +111,7 @@ class AuctionDetailSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("La subasta debe durar al menos 15 días.")
         
         return data
+
 
 
 class BidListCreateSerializer(serializers.ModelSerializer):
