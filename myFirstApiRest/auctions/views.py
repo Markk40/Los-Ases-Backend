@@ -14,7 +14,6 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from .permissions import IsOwnerOrAdmin 
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from django.db.models import Avg
 
 class CategoryListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -33,20 +32,7 @@ class AuctionListCreate(generics.ListCreateAPIView):
     parser_classes = [MultiPartParser, FormParser, JSONParser]  # Permite el manejo de archivos (imágenes)
     def get_queryset(self):
         # Annotate para agregar el campo calculado average_rating al queryset
-        queryset = Auction.objects.all().annotate(
-            average_rating=Avg('ratings__points')
-        )
-
-        # Filtro por valoración mínima
-        min_rating = self.request.query_params.get('min_rating')
-        if min_rating is not None:
-            try:
-                min_rating = float(min_rating)
-                queryset = queryset.filter(average_rating__gte=min_rating)
-            except ValueError:
-                pass  # Ignora si min_rating no es un número válido
-
-        # Filtro por subastas abiertas
+        queryset = Auction.objects.all()
         is_open = self.request.query_params.get('is_open')
         if is_open and is_open.lower() == 'true':
             queryset = queryset.filter(closing_date__gt=timezone.now())
