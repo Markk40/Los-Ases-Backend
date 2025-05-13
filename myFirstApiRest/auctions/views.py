@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django.utils import timezone
 # Create your views here.
 from rest_framework import generics
 from .models import Category, Auction, Bid, Rating, Comment
@@ -27,9 +27,27 @@ class CategoryRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
 class AuctionListCreate(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
-    queryset = Auction.objects.all()
+    
     serializer_class = AuctionListCreateSerializer
     parser_classes = [MultiPartParser, FormParser]  # Permite el manejo de archivos (imágenes)
+    def get_queryset(self):
+        queryset = Auction.objects.all()
+
+        # Filtro por valoración mínima
+        min_rating = self.request.query_params.get('min_rating')
+        if min_rating is not None:
+            try:
+                min_rating = float(min_rating)
+                queryset = queryset.filter(average_rating__gte=min_rating)
+            except ValueError:
+                pass
+
+        # Filtro por subastas abiertas usando closing_date
+        is_open = self.request.query_params.get('is_open')
+        if is_open and is_open.lower() == 'true':
+            queryset = queryset.filter(closing_date__gt=timezone.now())
+
+        return queryset
     
 class AuctionRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsOwnerOrAdmin]
